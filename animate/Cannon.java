@@ -44,7 +44,7 @@ public class Cannon {
         //Set initial position and angle
         this.x = x;
         this.y = y;
-        angle = Math.toRadians(-45);
+        angle = (-45);
 
         //pixels per timer interval.
         muzzleVelocity = 37;
@@ -86,7 +86,7 @@ public class Cannon {
     //Method to rotate cannon counterclockwise
     public void rotateCannonCounterclockwise() {
 
-        if (angle <= Math.toRadians(-85)) {
+        if (angle <= -90) {
             if (wheelClip != null) {
 
                 //Stop previous clip if it's playing
@@ -100,7 +100,7 @@ public class Cannon {
             }
         } else {
 
-            angle -= Math.toRadians(5);
+            angle -= 5;
 
             if (wheelClip != null) {
 
@@ -119,7 +119,7 @@ public class Cannon {
     //Method to rotate cannon clockwise
     public void rotateCannonClockwise() {
 
-        if (angle >= Math.toRadians(0)) {
+        if (angle >= 0) {
 
             if (wheelClip != null) {
 
@@ -132,7 +132,7 @@ public class Cannon {
             }
         } else {
 
-            angle += Math.toRadians(5);
+            angle += 5;
 
             if (wheelClip != null) {
 
@@ -183,7 +183,7 @@ public class Cannon {
         AffineTransform transform = new AffineTransform();
 
         transform.translate(x - 15, y - 25);
-        transform.rotate(angle, 15, 25); //Rotate around pivot point
+        transform.rotate(Math.toRadians(angle), 15, 25); //Rotate around pivot point
         //g2d.setTransform(transform);
         g2d.drawImage(cannonImage, transform, null);
         //g2d.setTransform(oldTransform);

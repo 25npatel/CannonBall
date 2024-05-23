@@ -59,7 +59,7 @@ public class Board extends JPanel implements KeyListener {
         g2d.setColor(Color.BLACK);
         g2d.drawString("Press SPACE to fire the cannonball", 20, 20);
         g2d.drawString("Use arrow keys to rotate the cannon", 20, 40);
-        g2d.drawString("Current angle: " + Math.toDegrees(cannon.getAngle()), 20, 60);
+        g2d.drawString("Current angle: " + cannon.getAngle(), 20, 60);
         g2d.drawString("Time scale: " + TIME_SCALE, 20, 80);
     }
 
@@ -71,9 +71,9 @@ public class Board extends JPanel implements KeyListener {
     public void keyPressed(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_SPACE) {
             cannon.fireCannon(cannonBall);
-        } else if (e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_LEFT) {
+        } else if (e.getKeyCode() == KeyEvent.VK_LEFT) {
             cannon.rotateCannonCounterclockwise();
-        } else if (e.getKeyCode() == KeyEvent.VK_DOWN || e.getKeyCode() == KeyEvent.VK_RIGHT) {
+        } else if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
             cannon.rotateCannonClockwise();
         }
         repaint();
