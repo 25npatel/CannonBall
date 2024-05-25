@@ -2,7 +2,6 @@ package animate;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.Image;
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 import javax.sound.sampled.AudioInputStream;
@@ -16,26 +15,30 @@ import java.io.IOException;
 
 public class CannonBall {
 
-    public enum STATE {
-        IDLE,
-        FLYING,
-        EXPLODING
-    }
-
     private double x = 0;
     private double y = 0;
     private double vx = 0;
     private double vy = 0;
     private double ax = 0;
-    private double ay = 0;
+    private double ay = 9.8;
     private double ground = 0;
     private double timescale = 1;
     private STATE state = STATE.IDLE;
     private BufferedImage flameImage;
     private Clip boomClip;
-    
+
+    public enum STATE {
+
+        IDLE,
+        FLYING,
+        EXPLODING
+
+    }
+
     //Constructor
-    public void NewCannonBall(double ax, double ay, double ground) {
+    public CannonBall(double ax, double ay, double ground) {
+
+        System.out.println("CannonBall!");
 
         this.ax = ax;
 
@@ -44,8 +47,11 @@ public class CannonBall {
         this.ground = ground;
 
         try {
+        
+            this.boomClip = loadAudioClip("media/boom.wav");
+            this.flameImage = loadImage("media/flame01.png");
 
-            this.boomClip = loadAudioClip("media/cannon.wav");
+            //System.out.println(flameImage);
 
         } catch (IOException | UnsupportedAudioFileException | LineUnavailableException ex) {
 
@@ -53,27 +59,35 @@ public class CannonBall {
         }
     }
 
+    private BufferedImage loadImage(String path) {
+
+        try {
+            
+            return ImageIO.read(new File(path));
+
+        } catch (IOException e) {
+
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     //Draw method
     public void draw(Graphics2D g2d) {
 
-        if (state == STATE.FLYING) {
-            System.out.println("draw me!");
+        if (state == STATE.IDLE) {
+            
+        } else if (state == STATE.FLYING) {
+            
             g2d.setColor(Color.RED);
-            g2d.fillOval((int) (x - 5), (int) (y - 5), 10, 10);
+            g2d.fillOval((int) (x - 13), (int) (y), 25, 25);
+            updateBall();
 
         } else if (state == STATE.EXPLODING) {
 
-            try {
-
-                boomClip.start();
-
-                flameImage = ImageIO.read(new File("media/flame01.png"));
-
-            } catch (IOException e) {
-                
-                e.printStackTrace();
-            }
-            g2d.drawImage(flameImage, (int) x - flameImage.getWidth() / 2, (int) y - flameImage.getHeight() / 2, null);
+            this.boomClip.start();
+            
+            g2d.drawImage(flameImage, (int) (x - 23), (int) (800), null);
         }
     }
 
@@ -81,22 +95,21 @@ public class CannonBall {
     public void updateBall() {
         if (state == STATE.FLYING) {
 
-            vx = vx + ax;
+            vx = vx + (ax / Board.TIME_SCALE);
 
-            vy = vy + ay;
+            vy = vy + (ay / Board.TIME_SCALE);
 
-            x = x + vx;
+            x = x + (vx / Board.TIME_SCALE);
 
-            y = y + vy;
+            y = y + (vy / Board.TIME_SCALE);
 
             if (y >= ground) {
 
-                //boomClip.start();
+                state = STATE.EXPLODING;
 
-                //state = STATE.EXPLODING; 
+                this.boomClip.start();
             }
         }
-       //System.out.print(state);
     }
 
     //Launch method
@@ -108,10 +121,11 @@ public class CannonBall {
             this.vx = vx;
             this.vy = vy;
 
-            state = STATE.FLYING;
-        } else if (state == STATE.EXPLODING) {
+            this.state = STATE.FLYING;
 
-            boomClip.start();
+        } else if (state == STATE.EXPLODING && y == ground) {
+
+            this.boomClip.start();
         }
     }
 
@@ -181,8 +195,8 @@ public class CannonBall {
         this.ay = ay;
     }
 
-    public void setTimeScale(double timeScale) {
-        this.timescale = timeScale;
+    public void setTimeScale(double TIME_SCALE) {
+        this.timescale = TIME_SCALE;
     }
 
     public void changeTimeScale(double delta) {
@@ -193,7 +207,7 @@ public class CannonBall {
         this.ground = ground;
     }
 
-     //Method to load audio clip from file
+    //Method to load audio clip from file
     private Clip loadAudioClip(String filename) throws IOException, UnsupportedAudioFileException, LineUnavailableException {
         Clip clip = null;
         AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new File(filename));

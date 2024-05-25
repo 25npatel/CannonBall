@@ -15,7 +15,8 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 
 public class Cannon {
 
-    private double x, y;
+    private double x = 0;
+    private double y = 0;
     private double angle;
     private double muzzleVelocity;
     private static final double HYPOT = 100;
@@ -23,21 +24,21 @@ public class Cannon {
     private Clip wheelClip;
     private Clip cannonClip;
 
-    // Constructor
+    //Constructor.
     public Cannon(double x, double y) {
 
         try {
+
             //Load the cannon image
             cannonImage = ImageIO.read(new File("media/sm_cannon.png"));
             System.out.println("Cannon!");
+
             //Load sound clips
             wheelClip = loadAudioClip("media/wheel.wav");
             cannonClip = loadAudioClip("media/cannon.wav");
-            //boomClip = loadAudioClip("media/boom.wav");
-            //flameImage = ImageIO.read(new File("media/flame01.png"));
-
 
         } catch (IOException | UnsupportedAudioFileException | LineUnavailableException ex) {
+
             ex.printStackTrace();
         }
 
@@ -47,10 +48,10 @@ public class Cannon {
         angle = (-45);
 
         //pixels per timer interval.
-        muzzleVelocity = 37;
+        muzzleVelocity = 100;
     }
 
-    //Getters and setters
+    //Getters and Setters
     public double getX() {
         return x;
     }
@@ -123,11 +124,11 @@ public class Cannon {
 
             if (wheelClip != null) {
 
-                // Stop previous clip if it's playing
+                //Stop previous clip if it's playing
                 wheelClip.stop();
-                // Rewind to the beginning
+                //Rewind to the beginning
                 wheelClip.setFramePosition(0);
-                // Start the sound effect
+                //Start the sound effect
                 wheelClip.start();
             }
         } else {
@@ -136,11 +137,11 @@ public class Cannon {
 
             if (wheelClip != null) {
 
-                // Stop previous clip if it's playing
+                //Stop previous clip if it's playing
                 wheelClip.stop();
-                // Rewind to the beginning
+                //Rewind to the beginning
                 wheelClip.setFramePosition(0);
-                // Start the sound effect
+                //Start the sound effect
                 wheelClip.start();
 
             }
@@ -150,28 +151,29 @@ public class Cannon {
     //Method to fire the cannon
     public void fireCannon(CannonBall cannonBall) {
 
-        if (cannonBall.getState() == CannonBall.STATE.IDLE) {
+        double vx0 = muzzleVelocity * Math.cos(Math.abs(Math.toRadians(angle)));
+        double vy0 = -muzzleVelocity * Math.sin(Math.abs(Math.toRadians(angle)));
 
-            double vx0 = muzzleVelocity * Math.cos(angle);
-            double vy0 = -muzzleVelocity * Math.sin(angle); // negative because y increases downward
+        double offsetX = HYPOT * Math.cos(Math.abs(Math.toRadians(angle)));
+        double offsetY = -HYPOT * Math.sin(Math.abs(Math.toRadians(angle)));
 
-            double offsetX = HYPOT * Math.cos(angle);
-            double offsetY = -HYPOT * Math.sin(angle); // negative because y increases downward
+        double startX = x + offsetX;
+        double startY = y + offsetY;
 
-            double startX = x + offsetX;
-            double startY = y + offsetY;
+        cannonBall.launch(startX, startY, vx0, vy0);
 
-            cannonBall.launch(startX, startY, vx0, vy0);
+        cannonClip.start();
 
-            if (cannonClip != null) {
+        cannonBall.updateBall();
 
-                //Stop previous clip if it's playing
-                cannonClip.stop();
-                //Rewind to the beginning
-                cannonClip.setFramePosition(0);
-                //Start the sound effect
-                cannonClip.start();
-            }
+        if (cannonClip != null) {
+
+            //Stop previous clip if it's playing
+            cannonClip.stop();
+            //Rewind to the beginning
+            cannonClip.setFramePosition(0);
+            //Start the sound effect
+            cannonClip.start();
         }
     }
 
@@ -179,26 +181,24 @@ public class Cannon {
     public void draw(Graphics2D g2d) {
 
         //Draw cannon image
-        //AffineTransform oldTransform = g2d.getTransform();
         AffineTransform transform = new AffineTransform();
 
-        transform.translate(x - 15, y - 25);
-        transform.rotate(Math.toRadians(angle), 15, 25); //Rotate around pivot point
-        //g2d.setTransform(transform);
+        transform.translate(x - 15, y - 45);
+
+        //Rotate around pivot point
+        transform.rotate(Math.toRadians(angle), 15, 25);
+
         g2d.drawImage(cannonImage, transform, null);
-        //g2d.setTransform(oldTransform);
 
         int[] triangleX = {(int) (x), (int) (x + 20), (int) (x - 20)};
-
-        //Y coordinates of vertices.
-        int[] triangleY = {(int) (y), (int) (y + 25), (int) (y + 25)};
+        int[] triangleY = {(int) (y - 20), (int) (y + 22), (int) (y + 22)};
 
         //Draw the filled triangle.
         g2d.setColor(Color.PINK);
         g2d.fillPolygon(triangleX, triangleY, 3);
 
         g2d.setColor(Color.BLUE);
-        g2d.fillOval((int) (x - 5), (int) (y - 5), 10, 10); 
+        g2d.fillOval((int) (x - 5), (int) (y - 20), 10, 10); 
     }
 
     //Method to load audio clip from file
