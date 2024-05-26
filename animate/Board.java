@@ -16,7 +16,7 @@ public class Board extends JPanel implements KeyListener {
     private static final int B_WIDTH = 1550;
     private static final int B_HEIGHT = 850;
     private static final int FLOOR = B_HEIGHT - 25;
-    public static double TIME_SCALE = 3.0;
+    public static double TIME_SCALE = 1.0;
     private Cannon cannon;
     private CannonBall cannonBall;
     private Timer timer;
