@@ -23,6 +23,7 @@ public class CannonBall {
     private double ay = 9.8;
     private double ground = 0;
     private double timescale = 1;
+    private boolean boomPlayed = false;
     private STATE state = STATE.IDLE;
     private BufferedImage flameImage;
     private Clip boomClip;
@@ -51,7 +52,7 @@ public class CannonBall {
             this.boomClip = loadAudioClip("media/boom.wav");
             this.flameImage = loadImage("media/flame01.png");
 
-            //System.out.println(flameImage);
+            System.out.println(flameImage);
 
         } catch (IOException | UnsupportedAudioFileException | LineUnavailableException ex) {
 
@@ -80,15 +81,16 @@ public class CannonBall {
         } else if (state == STATE.FLYING) {
             
             g2d.setColor(Color.RED);
-            g2d.fillOval((int) (x - 13), (int) (y), 25, 25);
-            updateBall();
+            g2d.fillOval((int) (x - 12), (int) (y - 25), 25, 25);
 
         } else if (state == STATE.EXPLODING) {
 
-            this.boomClip.start();
+            boomClip.start();
             
             g2d.drawImage(flameImage, (int) (x - 23), (int) (800), null);
         }
+
+        updateBall();
     }
 
     //Update ball method
@@ -107,7 +109,7 @@ public class CannonBall {
 
                 state = STATE.EXPLODING;
 
-                this.boomClip.start();
+                boomPlayed = false;
             }
         }
     }
@@ -123,9 +125,15 @@ public class CannonBall {
 
             this.state = STATE.FLYING;
 
-        } else if (state == STATE.EXPLODING && y == ground) {
+        } else if (state == STATE.EXPLODING && y >= ground) {
 
-            this.boomClip.start();
+            this.state = STATE.EXPLODING;
+
+            boomClip.stop();
+ 
+            boomClip.setFramePosition(0);
+
+            boomClip.start();
         }
     }
 
